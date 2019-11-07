@@ -1,0 +1,184 @@
+//*****************************************************************************
+//  Student Name: Archan Patel
+//  Student Number:  20834719 
+//  SYDE 121 Lab: 5 Assignment: 1
+//  Filename: lab05_01
+//  I hereby declare that this code, submitted for credit for the course
+//  SYDE121, is a product of my own efforts.  This coded solution has
+//  not been plagiarized from other sources and has not been knowingly
+//  plagiarized by others.
+//  Project:  Vector manipulation
+//  Purpose:  Allow user to input elements and then output specific stats
+//  Date:  Monday, October 14, 2019
+//*****************************************************************************
+	
+/*Test scenarios: - Tested multiple shapes and utilized their syntax to create a unique Systems Design Logo
+				  - Inputted varying numbers for x and y coordinates as well as various numbers for the 
+				  - width, height, radius, fillet radius and appropriate text to make the logo*/
+
+/*NOTE TO MARKER: when adding or removing names from the input.txt file, make sure the sursor is at
+				  the end of the last line, not the beginning of the line after the last, Thank You!*/
+
+//libraries
+#include <iostream>
+#include <cmath>
+#include <unistd.h>
+#include <iomanip>
+#include <cstdlib>
+#include <sstream>
+#include<conio.h>
+#include<string.h>
+#include<stdio.h>
+#include <bits/stdc++.h> 
+#include <cstdlib>
+#include <string>
+#include <stdlib.h>
+#include <algorithm> 
+
+using namespace std;
+
+//Function Declaration
+void syde();
+//Purpose: to generate the necessary information for the .svg file to output a unique graphic
+//Input: none
+//output: the logo
+
+int choice();
+//Purpose: to get the integer representing the user's choice (logo or graph)
+//Input: none
+//output: integer
+
+void output_graph();
+//Purpose: Output the graph
+//Input: none
+//Output: the graph
+
+//main
+int main ()
+{
+	//Variable Declaration
+	//STEP 1: obtain input from the file and setup output file
+	int option = choice(); //used for determining whether the user wants to see the logo or the bar graph
+
+	//STEP 2: Process the output according to the user's decision 
+	if (option == 1) //option 1
+	{
+		//STEP 3: output corresponding graphic
+		syde();
+	}
+	
+	else //option 2
+	{	
+		//STEP 3: Output the corresponding graphic	
+		output_graph();
+	}
+	
+	//STEP 4: Terminate
+	return 0;
+} //end of main
+
+//Function Definition
+void output_graph()
+{
+	//Stream Declaration
+	ifstream input; //input stream
+	ofstream output; //output steam
+	
+	//Variable Declaration
+	string names[5]; //Holds the names of the people from the text file
+	string current; //Holds the name of the persons on the corresponding line
+	vector <int> value(5); //Holds the value associated with their bar graph height
+	int i= 0; //index value to access each element in value
+	double max;
+	
+	//Set up input and output files
+	input.open("input.txt"); //input file
+	output.open("output.svg"); //output file
+	
+	//make sure the file can be read from
+	if(!input.fail())
+	{
+		//keep reading file until the end has been reached
+		while (!input.eof() && i<5) 
+			{
+				//read the whole line and store into 'current'
+				getline(input, current); // read one line at time
+				
+				// separate into tokens whilst skipping commas and spaces
+				names[i] = current.substr(0, current.find(',', 0)); 
+				value.at(i) = atoi(current.substr(current.find(',', 0) + 2).c_str()); 
+				
+				//print out the names and their values
+				cout << names[i] << ",\t" << value.at(i) << "\n";
+				i++; //index incrementation
+			}
+		//make sure the graph only draws the correct number of bars
+		for (int j = 5; j > i; j--)
+		{
+			value[j] = 0;
+		}
+		
+		max = *max_element(value.begin(), value.end());
+		
+		//make sure that the values don't exceed 400 and if they do, scale all values accordingly
+		if(max > 400)
+		{
+			for (int i = 0; i < 5 ;i++)
+			{
+				value.at(i) = (value.at(i)/max) * 350;
+			}
+		}
+	}
+
+	//check if output file is acceptable
+	if (!output.fail())
+	{
+		output << "<?xml version=\"1.0\"?>\n"; //output svg content to a file
+		output << "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" ";
+		output << "\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
+		output << "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"400\">\n";
+		output << "<rect x=\"40\" y=\"" << 150 + (250 - value.at(0))<< "\" width=\"50\" height=\""<<value.at(0)<<"\" style=\"fill:red;\"/>\n";
+		output << "<rect x=\"115\" y=\"" << 150 + (250 - value.at(1))<< "\" width=\"50\" height=\""<<value.at(1)<<"\" style=\"fill:blue;\"/>\n";
+		output << "<rect x=\"190\" y=\"" << 150 + (250 - value.at(2))<< "\" width=\"50\" height=\""<<value.at(2)<<"\" style=\"fill:green;\"/>\n";
+		output << "<rect x=\"265\" y=\"" << 150 + (250 - value.at(3))<< "\" width=\"50\" height=\""<<value.at(3)<<"\" style=\"fill:yellow;\"/>\n";
+		output << "<rect x=\"340\" y=\"" << 150 + (250 - value.at(4))<< "\" width=\"50\" height=\""<<value.at(4)<<"\" style=\"fill:pink;\"/>\n";
+		output << "<line x1=\"20\" y1=\"100\" x2=\"20\" y2=\"400\" style=\"stroke:purple;stroke-width:2\"/>\n";
+		output << "<line x1=\"20\" y1=\"400\" x2=\"400\" y2=\"400\" style=\"stroke:purple;stroke-width:2\"/>\n";
+		output << "</svg>\n";
+		output.close(); //close the output file
+	}
+}
+
+int choice()
+{
+	//Variable Declaration
+	int option;
+	
+	//determine what the user wants to see
+	cout << "Input '1' to see SYDE logo:\nInput '2' to see the bar graph:\n";
+	cin >> option;
+	return option;
+}
+
+void syde ()
+{
+	//Stream Declaration
+	ofstream output; //output stream
+	output.open("output.svg"); //output .svg file
+	
+	if(!output.fail()) { //make sure output is acceptable
+		output << "<?xml version=\"1.0\"?>\n"; //output svg content to a file
+		output << "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" ";
+		output << "\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
+		output << "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"700\" height=\"700\">\n";
+		output << "<rect x=\"60\" y=\"50\" rx=\"20\" ry=\"20\" width=\"400\" height=\"400\" style=\"fill:purple;\"/>\n";
+		output << "<circle cx=\"260\" cy=\"250\" r=\"150\" stroke=\"black\" stroke-width=\"3\" fill=\"red\" />";
+		output << "<text x=\"80\" y=\"85\" fill=\"white\">SYDE</text>";
+		output << "<rect x=\"85\" y=\"210\" rx=\"20\" ry=\"20\" width=\"350\" height=\"80\" style=\"fill:black;\"/>\n";
+		output << "<text x=\"120\" y=\"260\" fill=\"white\" font-size=\"30\">University of Waterloo</text>";
+		output << "<text x=\"400\" y=\"430\" fill=\"white\">2024</text>";
+		output << "</svg>\n";
+		output.close(); //close the output file
+	}
+}
+
